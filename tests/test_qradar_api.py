@@ -15,13 +15,13 @@ class TestRequest(unittest.TestCase):
         token = CREDENTIALS['token']
         qradar = Api(url, token, False)
 
-        searches = qradar.ariel.read('searches')
+        searches = qradar.ariel.read('searches')[0]
         self.assertIsInstance(searches, list)
 
         query = qradar.ariel.create('searches', query_expression='select * from flows last 1 minutes')
         self.assertIsInstance(query, dict)
 
-        offenses = qradar.siem.read('offenses')
+        offenses = qradar.siem.read('offenses', Range='items=0-10')[0]
         self.assertIsInstance(offenses, list)
 
 

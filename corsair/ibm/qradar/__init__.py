@@ -60,7 +60,9 @@ class Endpoint(object):
         except timeout:
             raise CorsairError('Operation timedout')
         if res.status == 200:
-            return loads(res.read())
+            crange = res.headers['Content-Range'].split(' ')[1] \
+                if 'Content-Range' in res.headers else None
+            return (loads(res.read()), crange)
         else:
             raise CorsairError('Not found')
 
@@ -78,6 +80,9 @@ class Request(object):
         }
     
     def get(self, **filters):
+        if 'Range' in filters:
+            self.headers.update({'Range': filters['Range']})
+            filters.pop('Range')
         url = f'{self.url}?{urlencode(filters)}' if filters else self.url
         req = urllib.request.Request(url, headers=self.headers, method='GET')
         return urllib.request.urlopen(req, timeout=self.timeout, context=self.context)
