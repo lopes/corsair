@@ -7,7 +7,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='Corsair',
-    version='0.3.1',
+    version='0.3.2',
     author='José Lopes de Oliveira Jr.',
     author_email='2897144+forkd@users.noreply.github.com',
     description='Python wrappers for some NSOC tools.',
