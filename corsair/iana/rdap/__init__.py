@@ -16,6 +16,7 @@ class Api(object):
         self.asn = self.parse_asn()
         self.ipv4 = self.parse_ip()
         self.ipv6 = self.parse_ip('ipv6.json')
+        self.dns = self.parse_dns()
         self.credentials = (self.root, self.tls_verify)
 
         self.domain = Endpoint(self.credentials, 'domain')
@@ -46,6 +47,16 @@ class Api(object):
             for r in service[0]:
                 ip[service[1][0]].append(ip_network(r))
         return ip
+    
+    def parse_dns(self, resource='dns.json'):
+        dns = dict()
+        req = Request(f'{self.root}/{resource}', self.tls_verify)
+        res = loads(req.get().read())
+        for service in res['services']:
+            dns.update({service[1][0]: list()})
+            for r in service[0]:
+                dns[service[1][0]].append(r)
+        return dns
 
 
 class Endpoint(object):

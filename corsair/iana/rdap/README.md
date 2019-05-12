@@ -12,6 +12,7 @@ This is the [IANA RDAP](https://data.iana.org/rdap/) API wrapper.
 >>> asn = 266604
 >>> ipv4 = ipaddress.ip_address('128.201.18.1')
 >>> ipv6 = ipaddress.ip_address('2801:80:1ce0::')
+>>> domain = 'cemig.com.br'
 >>>
 >>> for k,v in rdap.asn.items():
 ...     for r in v:
@@ -24,5 +25,9 @@ This is the [IANA RDAP](https://data.iana.org/rdap/) API wrapper.
 >>> for k,v in rdap.ipv6.items():
 ...     for net in v:
 ...         if ipv6 in net:
+...             print(k)
+>>> for k,v in rdap.dns.items():
+...     for d in v:
+...         if domain.split('.')[-1] == d:
 ...             print(k)
 ```
