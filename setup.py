@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 
-import setuptools
+from setuptools import setup, find_packages
+
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup(
     name='Corsair',
-    version='0.3.2',
+    version='0.3.3',
     author='José Lopes de Oliveira Jr.',
     author_email='2897144+forkd@users.noreply.github.com',
     description='Python wrappers for some NSOC tools.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/forkd/corsair',
-    packages=setuptools.find_packages(),
+    packages=find_packages(exclude=['*.tests.*', "test.*", "tests"]),
     classifiers=[
         'Programming Language :: Python :: 3.7',
         'License :: OSI Approved :: MIT License',
