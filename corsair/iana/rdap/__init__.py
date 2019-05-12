@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 from json import loads
 from socket import timeout
 from ssl import _create_unverified_context
+from ipaddress import ip_network
 
 from corsair import *
 
@@ -12,7 +13,9 @@ class Api(object):
     def __init__(self, tls_verify=True):
         self.tls_verify = tls_verify
         self.root = 'https://data.iana.org/rdap/'
-        self.asn = self.get_asn()
+        self.asn = self.parse_asn()
+        self.ipv4 = self.parse_ip()
+        self.ipv6 = self.parse_ip('ipv6.json')
         self.credentials = (self.root, self.tls_verify)
 
         self.domain = Endpoint(self.credentials, 'domain')
@@ -20,10 +23,10 @@ class Api(object):
         self.entity = Endpoint(self.credentials, 'entity')
         self.ip = Endpoint(self.credentials, 'ip')
     
-    def get_asn(self, resource='asn.json'):
+    def parse_asn(self, resource='asn.json'):
+        asn = dict()
         req = Request(f'{self.root}/{resource}', self.tls_verify)
         res = loads(req.get().read())
-        asn = dict()
         for service in res['services']:
             asn.update({service[1][0]: list()})
             for r in service[0]:
@@ -33,6 +36,16 @@ class Api(object):
                 else:
                     asn[service[1][0]].append(range(int(s[0]), int(s[0])+1))
         return asn
+    
+    def parse_ip(self, resource='ipv4.json'):
+        ip = dict()
+        req = Request(f'{self.root}/{resource}', self.tls_verify)
+        res = loads(req.get().read())
+        for service in res['services']:
+            ip.update({service[1][0]: list()})
+            for r in service[0]:
+                ip[service[1][0]].append(ip_network(r))
+        return ip
 
 
 class Endpoint(object):
