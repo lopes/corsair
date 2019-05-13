@@ -1,5 +1,6 @@
 from base64 import b64encode
 from ssl import _create_unverified_context
+from urllib.parse import urlsplit
 
 
 TIMEOUT = 20  # default timeout in seconds
@@ -15,7 +16,8 @@ def gen_auth(username, password):
 
 def make_url(base_url, endpoint, resource):
     'Corsair creates URLs using this method'
-    url = f'{base_url}/{endpoint}/{resource}'
-    url.replace('//', '/')
-    url = url[:-1] if url.endswith('/') else url
-    return url
+    base_url = urlsplit(base_url)
+    path = base_url.path + f'/{endpoint}/{resource}'
+    path = path.replace('//', '/')
+    path = path[:-1] if path.endswith('/') else path
+    return base_url._replace(path=path).geturl()
