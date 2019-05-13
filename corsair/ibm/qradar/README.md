@@ -24,14 +24,14 @@ QRadar paginates using HTTP headers, so Corsair implemented the keyword `Range` 
 >>> from corsair.ibm.qradar import Api
 >>> qradar = Api('https://qradar.corp/api', '4-53cur3-tok3n-h3r3')
 >>>
->>> searches = qradar.ariel.read('searches')[0]
->>> qradar.ariel.read(f'searches/{searches[0]}')
->>> qradar.ariel.read(f'searches/{searches[0]}/results')
+>>> searches = qradar.ariel.read('searches')
+>>> qradar.ariel.read(f'searches/{searches["results"][0]}')
+>>> qradar.ariel.read(f'searches/{searches["results"][0]}/results')
 >>>
->>> offenses = qradar.siem.read('offenses')[0]
->>> qradar.siem.read(f'offenses/{offenses[0]["id"]}')
+>>> offenses = qradar.siem.read('offenses')
+>>> qradar.siem.read(f'offenses/{offenses["results"][0]["id"]}')
 >>> qradar.siem.read('offenses', Range='items=4-5')
 >>>
->>> qradar.searches.create(query_expression='select * from flows last 5 minutes')
+>>> qradar.ariel.create('searches', query_expression='select * from flows last 5 minutes')
 >>> qradar.system.read('servers')
 ```

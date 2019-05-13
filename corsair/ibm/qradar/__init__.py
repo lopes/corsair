@@ -62,7 +62,7 @@ class Endpoint(object):
         if res.status == 200:
             crange = res.headers['Content-Range'].split(' ')[1] \
                 if 'Content-Range' in res.headers else None
-            return (loads(res.read()), crange)
+            return {'results': loads(res.read()), 'range': crange}
         else:
             raise CorsairError('Not found')
 

@@ -39,7 +39,7 @@ def get_all_prime_devices():
             devices.update({device['devicesDTO']['ipAddress']:
                 device['devicesDTO']['deviceName']})
         except KeyError:
-            print(f'ERROR: {device}')
+            print(f'ERROR: {device["@url"]}')
     
     raw = get_all_prime('AccessPoints')
     for ap in raw:
@@ -47,7 +47,7 @@ def get_all_prime_devices():
             devices.update({ap['accessPointsDTO']['ipAddress']['address']:
                 ap['accessPointsDTO']['model']})
         except KeyError:
-            print(f'ERROR: {device}')
+            print(f'ERROR: {device["@url"]}')
     return devices
 
 def get_all_prime(resource):
@@ -69,17 +69,38 @@ def get_all_netbox_addresses():
     addrs, raw = (dict(), list())
     res = netbox.ipam.read('ip-addresses')
     raw.extend(res['results'])
+
     while res['next']:
         offset = int(re.sub(r'^.*offset=([0-9]+).*$', r'\1', res['next']))
         res = netbox.ipam.read('ip-addresses', offset=offset)
         raw.extend(res['results'])
+
+    # searching for duplicated addresses
+    addresses = [addr['address'] for addr in raw]
+    for addr in set([x for x in addresses if addresses.count(x) > 1]):
+        print(f'DUPLICATED: {addr}')
+
     for addr in raw:
         addrs.update({addr['address']: (addr['id'], addr['description'], addr['tags'])})
     return addrs
 
+def check_netbox_prefixes():
+    raw = list()
+    res = netbox.ipam.read('prefixes')
+    raw.extend(res['results'])
+
+    while res['next']:
+        offset = int(re.sub(r'^.*offset=([0-9]+).*$', r'\1', res['next']))
+        res = netbox.ipam.read('prefixes', offset=offset)
+        raw.extend(res['results'])
+    
+    prefixes = [p['prefix'] for p in raw]
+    for prefix in set(x for x in prefixes if prefixes.count(x) > 1):
+        print(f'DUPLICATED PREFIX: {prefix}')
 
 
 if __name__ == '__main__':
+    check_netbox_prefixes()
     prime_devices = get_all_prime_devices()
     netbox_addresses = get_all_netbox_addresses()
 
